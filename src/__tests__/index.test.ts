@@ -78,7 +78,7 @@ test('randomFriendlyPhrase seed', () => {
         'TrickyRingedSled'
     ]
     for (let i=2; i<10; i++) {
-        expect(randomFriendlyPhrase({seed: `${i}`)).toEqual(phrases[i])
+        expect(randomFriendlyPhrase({seed: `${i}`})).toEqual(phrases[i])
     }
     expect(() => randomFriendlyPhrase({seed: '10'})).toThrowError(/IllegalStateError: cannot generate for seed 10.*/)
     // seed remains disregarded when code is passed
