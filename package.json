@@ -5,7 +5,7 @@
   },
   "name": "randomfriendlyphrase",
   "description": "A utility to generate randomized, human-readable, worksafe phrases in a large space with good defaults. Useful for temporary user names or room names.",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
