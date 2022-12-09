@@ -6,13 +6,18 @@
   "name": "randomfriendlyphrase",
   "description": "A utility to generate randomized, human-readable, worksafe phrases in a large space with good defaults. Useful for temporary user names or room names.",
   "version": "1.0.0",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
+    "lint": "tslint -p tsconfig.json",
+    "prepare" : "npm run build",
+    "prepublishOnly" : "npm test && npm run lint",
+    "preversion" : "npm run lint",
+    "version" : "npm run format && git add -A src",
+    "postversion" : "git push && git push --tags"
   },
   "repository": {
     "type": "git",
