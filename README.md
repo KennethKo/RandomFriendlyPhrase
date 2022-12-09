@@ -21,10 +21,8 @@ A utility to generate randomized, human-readable, worksafe phrases in a large sp
  * @param {string} [opts.delimeter = ''] The delimeter between each word in the phrase. Default empty string.
  * @param {string} [opts.prefix = undefined] If defined, constrains the space of the first word in the phrase. 
  *   Case insensitive.
- * @param {number} [ops.code = undefined] If defined, a number between 0 and 1 (1 excluded) that dictates a stable phrase.
- *   That is, the same phrase will be generated when given the same number. 
+ * @param {string} [ops.code = undefined] If defined, a code that should always map to the same stable phrase.
  *   This should be stable across versions, as we're locked to v1.2.0 of friendly-words.
- *   Any number >= 1 will be moduloed against 1 to take just the fractional part.
  *   This can map identifiers to stable friendly phrases.
  * @param {string} [ops.seed = undefined] If defined, defines a stable seed for producing an identical series of 
  *   random phrases from initialization. 
