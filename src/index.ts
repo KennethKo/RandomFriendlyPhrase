@@ -9,11 +9,11 @@ const rands: {[key: string]: Picker} = {}
 // gen.create()'s gen.RandomSeed fulfills the generalized local Picker type
 type Picker = {range: (range: number) => number}
 
-const getPicker = (code: number | undefined, seed: string | undefined) => {
-    let picker: Picker = rand
-    let curCode = code && code % 1 || 0
+const getPicker = (code: number | undefined, seed: string | undefined) : Picker => {
+    // let code return a stable, unique pick with an avalanche effect
     if (code != null) {
-        picker = {
+        let curCode = code && code % 1 || 0
+        return {
             range: (range: number) => {
                 // select using the code, and use the remainder for the next range call
                 const ret = Math.floor(range * curCode)
@@ -22,16 +22,20 @@ const getPicker = (code: number | undefined, seed: string | undefined) => {
                 return ret
             }
         }
-    } else if (code == null && seed != null) {
+    }
+    // let seed return a stable random sequence
+    if (seed != null) {
         if (rands[seed] != null) {
-            picker = rands[seed]
+            return rands[seed]
         } else {
             if (Object.keys(rands).length >= 10)
                 throw Error(`IllegalStateError: cannot generate for seed ${seed} when 10 other seeds have already been initialized`)
-            picker = rands[seed] = gen.create(seed)
+            rands[seed] = gen.create(seed)
+            return rands[seed]
         }
     }
-    return picker
+    // otherwise return an unbiased randomizer
+    return rand
 }
 
 const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1)
