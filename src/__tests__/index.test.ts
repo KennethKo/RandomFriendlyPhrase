@@ -55,14 +55,14 @@ test('randomFriendlyPhrase code', () => {
     expect(pred3).toEqual(pred4)
 })
 
-const seed = 0
+const seed = '0'
 test('randomFriendlyPhrase seed', () => {
     expect(randomFriendlyPhrase({seed})).toMatch('CreamAtlanticAragon')
     expect(randomFriendlyPhrase({seed, code: 0})).toMatch(zeroPhrase)
     expect(randomFriendlyPhrase({seed, code})).toMatch('DorianBandRest')
     expect(randomFriendlyPhrase({seed})).toMatch('MirageStreamBrush')
     expect(randomFriendlyPhrase({seed})).toMatch('PyriteSilkenSphere')
-    expect(randomFriendlyPhrase({seed: 1})).toMatch('GlacierTellingFig')
+    expect(randomFriendlyPhrase({seed: '1'})).toMatch('GlacierTellingFig')
     expect(randomFriendlyPhrase({seed})).toMatch('PalmRhinestoneButterkase')
 
     const phrases = [
@@ -78,10 +78,10 @@ test('randomFriendlyPhrase seed', () => {
         'TrickyRingedSled'
     ]
     for (let i=2; i<10; i++) {
-        expect(randomFriendlyPhrase({seed: i})).toEqual(phrases[i])
+        expect(randomFriendlyPhrase({seed: `${i}`)).toEqual(phrases[i])
     }
-    expect(() => randomFriendlyPhrase({seed: 10})).toThrowError(/IllegalStateError: cannot generate for seed 10.*/)
+    expect(() => randomFriendlyPhrase({seed: '10'})).toThrowError(/IllegalStateError: cannot generate for seed 10.*/)
     // seed remains disregarded when code is passed
-    expect(randomFriendlyPhrase({seed: 10, code: 0})).toMatch(zeroPhrase)
-    expect(() => randomFriendlyPhrase({seed: 10})).toThrowError(/IllegalStateError: cannot generate for seed 10.*/)
+    expect(randomFriendlyPhrase({seed: '10', code: 0})).toMatch(zeroPhrase)
+    expect(() => randomFriendlyPhrase({seed: '10'})).toThrowError(/IllegalStateError: cannot generate for seed 10.*/)
 })

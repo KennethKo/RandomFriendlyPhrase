@@ -26,7 +26,7 @@ A utility to generate randomized, human-readable, worksafe phrases in a large sp
  *   This should be stable across versions, as we're locked to v1.2.0 of friendly-words.
  *   Any number >= 1 will be moduloed against 1 to take just the fractional part.
  *   This can map identifiers to stable friendly phrases.
- * @param {number} [ops.seed = undefined] If defined, defines a stable seed for producing an identical series of 
+ * @param {string} [ops.seed = undefined] If defined, defines a stable seed for producing an identical series of 
  *   random phrases from initialization. 
  *   Call this function repeatedly with the same seed to make it behave like a generator along the same sequence.
  *   Intended for stable unit testing or for stable internal startup. 

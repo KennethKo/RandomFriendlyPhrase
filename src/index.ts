@@ -1,11 +1,13 @@
 
-const friendlyWords = require('friendly-words')
-const gen = require('random-seed')
-const rand = gen.create()
-const rands: {[key: number]: any} = {}
+import {objects, predicates, teams, collections} from 'friendly-words'
+import * as gen from 'random-seed'
 
-const getPicker = (code: number | undefined, seed: number | undefined) => {
-    let picker = rand
+const friendlyWords: {[key: string]: string[]} = { objects, predicates, teams, collections }
+const rand = gen.create()
+const rands: {[key: string]: any} = {}
+
+const getPicker = (code: number | undefined, seed: string | undefined) => {
+    let picker: {range: (range: number) => number} = rand
     let curCode = code && code % 1 || 0
     if (code != null) {
         picker = {
@@ -54,7 +56,7 @@ const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1)
  *   This should be stable across versions, as we're locked to v1.2.0 of friendly-words.
  *   Any number >= 1 will be moduloed against 1 to take just the fractional part.
  *   This can map identifiers to stable friendly phrases.
- * @param {number} [ops.seed = undefined] If defined, defines a stable seed for producing an identical series of 
+ * @param {string} [ops.seed = undefined] If defined, defines a stable seed for producing an identical series of 
  *   random phrases from initialization. 
  *   Call this function repeatedly with the same seed to make it behave like a generator along the same sequence.
  *   Intended for stable unit testing or for stable internal startup. 
@@ -66,25 +68,25 @@ function randomFriendlyPhrase({
     // named parameter defaults
     form = ['predicate', 'predicate', 'object'],
     delimeter = '',
-    prefix = undefined,
-    code = undefined,
-    seed = undefined,
+    prefix,
+    code,
+    seed,
 } : {
     // types
     form?: string[],
     delimeter?: string,
     prefix?: string,
     code?: number,
-    seed?: number,
+    seed?: string,
 } = {}) {
     const form2 = form.map(k => k+'s').filter(k => !!friendlyWords[k])
     if (!form2.length) throw Error(`InvalidArgumentError: illegal form [${form}]`)
 
-    let picker = getPicker(code, seed)
+    const picker = getPicker(code, seed)
 
     return form2.map((k, i) => {
         let space = friendlyWords[k]
-        if (i == 0 && prefix) {
+        if (i === 0 && prefix) {
             const lowPrefix = prefix.toLowerCase()
             space = friendlyWords[k].filter((w:string) => w.startsWith(lowPrefix))
             if (!space.length) 
