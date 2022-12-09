@@ -4,10 +4,13 @@ import * as gen from 'random-seed'
 
 const friendlyWords: {[key: string]: string[]} = { objects, predicates, teams, collections }
 const rand = gen.create()
-const rands: {[key: string]: any} = {}
+const rands: {[key: string]: Picker} = {}
+
+// gen.create()'s gen.RandomSeed fulfills the generalized local Picker type
+type Picker = {range: (range: number) => number}
 
 const getPicker = (code: number | undefined, seed: string | undefined) => {
-    let picker: {range: (range: number) => number} = rand
+    let picker: Picker = rand
     let curCode = code && code % 1 || 0
     if (code != null) {
         picker = {
