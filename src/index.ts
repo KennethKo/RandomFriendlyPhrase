@@ -3,42 +3,15 @@ import {objects, predicates, teams, collections} from 'friendly-words'
 import * as gen from 'random-seed'
 
 const friendlyWords: {[key: string]: string[]} = { objects, predicates, teams, collections }
-const rand = gen.create()
-const rands: {[key: string]: Picker} = {}
 
-// gen.create()'s gen.RandomSeed fulfills the generalized local Picker type
-type Picker = {range: (range: number) => number}
-
-const getPicker = (code: number | undefined, seed: string | undefined) : Picker => {
-    // let code return a stable, unique pick with an avalanche effect
-    if (code != null) {
-        let curCode = code && code % 1 || 0
-        return {
-            range: (range: number) => {
-                // select using the code, and use the remainder for the next range call
-                const ret = Math.floor(range * curCode)
-                // this remainder allows us to use a single float to represent a unique phrase in NxMx... space
-                curCode = range * curCode - ret
-                return ret
-            }
-        }
-    }
-    // let seed return a stable random sequence
-    if (seed != null) {
-        if (rands[seed] != null) {
-            return rands[seed]
-        } else {
-            if (Object.keys(rands).length >= 10)
-                throw Error(`IllegalStateError: cannot generate for seed ${seed} when 10 other seeds have already been initialized`)
-            rands[seed] = gen.create(seed)
-            return rands[seed]
-        }
-    }
-    // otherwise return an unbiased randomizer
-    return rand
+type Opts = {
+    // types
+    form?: string[]
+    delimeter?: string
+    prefix?: string
+    code?: string
+    seed?: string
 }
-
-const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1)
 
 /**
  * Returns randomized, human-readable, worksafe phrase. e.g. 'TremendousSpangleFreezer' 
@@ -58,10 +31,8 @@ const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1)
  * @param {string} [opts.delimeter = ''] The delimeter between each word in the phrase. Default empty string.
  * @param {string} [opts.prefix = undefined] If defined, constrains the space of the first word in the phrase. 
  *   Case insensitive.
- * @param {number} [ops.code = undefined] If defined, a number between 0 and 1 (1 excluded) that dictates a stable phrase.
- *   That is, the same phrase will be generated when given the same number. 
+ * @param {string} [ops.code = undefined] If defined, a code that should always map to the same stable phrase.
  *   This should be stable across versions, as we're locked to v1.2.0 of friendly-words.
- *   Any number >= 1 will be moduloed against 1 to take just the fractional part.
  *   This can map identifiers to stable friendly phrases.
  * @param {string} [ops.seed = undefined] If defined, defines a stable seed for producing an identical series of 
  *   random phrases from initialization. 
@@ -71,27 +42,21 @@ const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1)
  *   Not intended for general use. Throws if more than 10 different seeds are ever requested.
  *   Ignored if ops.code is defined.
  */
-function randomFriendlyPhrase({
+function randomFriendlyPhrase(opts : Opts = {}) {
     // named parameter defaults
-    form = ['predicate', 'predicate', 'object'],
-    delimeter = '',
-    prefix,
-    code,
-    seed,
-} : {
-    // types
-    form?: string[],
-    delimeter?: string,
-    prefix?: string,
-    code?: number,
-    seed?: string,
-} = {}) {
-    const form2 = form.map(k => k+'s').filter(k => !!friendlyWords[k])
-    if (!form2.length) throw Error(`InvalidArgumentError: illegal form [${form}]`)
+    const {
+        form = ['predicate', 'predicate', 'object'],
+        delimeter = '',
+        prefix,
+    } = opts
+    opts = {form, delimeter, prefix, ...opts}
 
-    const picker = getPicker(code, seed)
+    const normForm = form.map(k => k+'s').filter(k => !!friendlyWords[k])
+    if (!normForm.length) throw Error(`InvalidArgumentError: illegal form [${form}]`)
 
-    return form2.map((k, i) => {
+    const picker = getPicker(opts)
+
+    return normForm.map((k, i) => {
         let space = friendlyWords[k]
         if (i === 0 && prefix) {
             const lowPrefix = prefix.toLowerCase()
@@ -104,6 +69,36 @@ function randomFriendlyPhrase({
     .map(capitalize)
     .join(delimeter)
 }
+
+// gen.create()'s gen.RandomSeed fulfills the generalized local Picker type
+type Picker = {range: (range: number) => number}
+const rand = gen.create()
+const rands: {[key: string]: Picker} = {}
+
+const getPicker = ({code, seed} : Opts) : Picker => {
+    // let code return a stable, unique pick with an avalanche effect
+    if (code != null) {
+        // picker lifecycle within phrase
+        return gen.create(code)
+    }
+    // let seed return a stable random sequence
+    if (seed != null) {
+        if (rands[seed] != null) {
+            return rands[seed]
+        } else {
+            if (Object.keys(rands).length >= 10)
+                throw Error(`IllegalStateError: cannot generate for seed ${seed} when 10 other seeds have already been initialized`)
+            // picker lifecycle across phrases. Adding salt to make seed and code differ
+            rands[seed] = gen.create(seed+'Salt')
+            return rands[seed]
+        }
+    }
+    // otherwise return an unbiased randomizer
+    return rand
+}
+
+const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1)
+
 
 export default randomFriendlyPhrase
 

@@ -42,46 +42,43 @@ test('randomFriendlyPhrase prefix error', () => {
     expect(randomFriendlyPhrase({prefix: 'aa', form: ['object', 'predicate']})).toMatch(/Aa.*/)
 })
 
-const code = 1.2345678901234
+const code = 'foobar'
+const codePhrase = 'SameHeadyPeridot'
 test('randomFriendlyPhrase code', () => {
-    expect(randomFriendlyPhrase({code: 0})).toMatch(zeroPhrase)
+    expect(randomFriendlyPhrase({code})).toMatch(codePhrase)
     expect(randomFriendlyPhrase({code})).toMatch(randomFriendlyPhrase({code}))
-    expect(randomFriendlyPhrase({code})).toMatch(randomFriendlyPhrase({code: code+1}))
-    expect(randomFriendlyPhrase({code})).not.toMatch(randomFriendlyPhrase({code: code+0.1}))
-    // terms should never equal except for code zero.
-    const [pred1, pred2] = randomFriendlyPhrase({code, form: ['predicate', 'predicate'], delimeter: ','}).split(',')
+    expect(randomFriendlyPhrase({code})).not.toMatch(randomFriendlyPhrase({code: code+'baz'}))
+    // terms should never equal
+    const [pred1, pred2] = randomFriendlyPhrase({code: code+'baz', form: ['predicate', 'predicate'], delimeter: ','}).split(',')
     expect(pred1).not.toEqual(pred2)
-    const [pred3, pred4] = randomFriendlyPhrase({code: 0, form: ['predicate', 'predicate'], delimeter: ','}).split(',')
-    expect(pred3).toEqual(pred4)
 })
 
 const seed = '0'
 test('randomFriendlyPhrase seed', () => {
-    expect(randomFriendlyPhrase({seed})).toMatch('CreamAtlanticAragon')
-    expect(randomFriendlyPhrase({seed, code: 0})).toMatch(zeroPhrase)
-    expect(randomFriendlyPhrase({seed, code})).toMatch('DorianBandRest')
-    expect(randomFriendlyPhrase({seed})).toMatch('MirageStreamBrush')
-    expect(randomFriendlyPhrase({seed})).toMatch('PyriteSilkenSphere')
-    expect(randomFriendlyPhrase({seed: '1'})).toMatch('GlacierTellingFig')
-    expect(randomFriendlyPhrase({seed})).toMatch('PalmRhinestoneButterkase')
+    expect(randomFriendlyPhrase({seed})).toMatch('LapisLikeStretch')
+    expect(randomFriendlyPhrase({seed, code})).toMatch(codePhrase)
+    expect(randomFriendlyPhrase({seed})).toMatch('TricolorHillTable')
+    expect(randomFriendlyPhrase({seed})).toMatch('TenderCapableJonquil')
+    expect(randomFriendlyPhrase({seed: '1'})).toMatch('OssifiedDaffyArtichoke')
+    expect(randomFriendlyPhrase({seed})).toMatch('OpaqueCubicCreek')
 
     const phrases = [
-        'CreamAtlanticAragon',
-        'GlacierTellingFig',    // seed 0 and 1 are tested above
-        'WhimsicalSteadyStygimoloch',
-        'RogueLoftyClove',
-        'ChippedIncongruousRun',
-        'LavenderFierceStick',
-        'NonstopMarbledPrince',
-        'GlowThankfulLiterature',
-        'AliveDaffodilRose',
-        'TrickyRingedSled'
+        'LapisLikeStretch',
+        'OssifiedDaffyArtichoke',    // seed 0 and 1 are tested above
+        'PicturesqueEightAmbulance',
+        'ScintillatingMulberryList',
+        'ThinkableFlutteringPatella',
+        'CeruleanThankfulDiploma',
+        'SaltySteadfastBillboard',
+        'GlamorousRippleOkra',
+        'InvitedTorchAddress',
+        'SleetPuzzledTangelo',
     ]
     for (let i=2; i<10; i++) {
         expect(randomFriendlyPhrase({seed: `${i}`})).toEqual(phrases[i])
     }
     expect(() => randomFriendlyPhrase({seed: '10'})).toThrowError(/IllegalStateError: cannot generate for seed 10.*/)
     // seed remains disregarded when code is passed
-    expect(randomFriendlyPhrase({seed: '10', code: 0})).toMatch(zeroPhrase)
+    expect(randomFriendlyPhrase({seed: '10', code})).toMatch(codePhrase)
     expect(() => randomFriendlyPhrase({seed: '10'})).toThrowError(/IllegalStateError: cannot generate for seed 10.*/)
 })
